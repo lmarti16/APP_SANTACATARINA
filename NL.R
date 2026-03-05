@@ -46,11 +46,12 @@ credentials <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# ==========================================================
-# GOOGLE
-# ==========================================================
-GOOGLE_API_KEY           <- "AIzaSyC4IV3RTxKKLoKDsJsgPR-V-E-2-etW9IY"
-GOOGLE_GEOCODE_LANGUAGE  <- "es-MX"
+# ── Credenciales desde .Renviron ─────────────────────────────
+GOOGLE_API_KEY      <- Sys.getenv("GOOGLE_API_KEY", unset = "")
+OPENAI_API_KEY      <- Sys.getenv("OPENAI_API_KEY", unset = "")
+AWS_ACCESS_KEY_ID   <- Sys.getenv("AWS_ACCESS_KEY_ID", unset = "")
+AWS_SECRET_ACCESS_KEY <- Sys.getenv("AWS_SECRET_ACCESS_KEY", unset = "")
+AWS_DEFAULT_REGION  <- Sys.getenv("AWS_DEFAULT_REGION", unset = "")
 
 # ==========================================================
 # 0) PATHS
