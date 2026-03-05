@@ -94,20 +94,7 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
                               main_tabs) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    TRADUCTOR <- get0("TRADUCTOR", ifnotfound = data.frame(), inherits = TRUE)
-    if (!is.data.frame(TRADUCTOR)) TRADUCTOR <- data.frame()
-    INEGI_COL_MAP <- get0("INEGI_COL_MAP", ifnotfound = NULL, inherits = TRUE)
-    if (!(is.character(INEGI_COL_MAP) && length(INEGI_COL_MAP) > 0 && !is.null(names(INEGI_COL_MAP)))) {
-      INEGI_COLS <- grep("_INEGI$", names(sf_all), value = TRUE)
-      INEGI_VARS <- sub("_INEGI$", "", INEGI_COLS)
-      INEGI_COL_MAP <- setNames(INEGI_COLS, INEGI_VARS)
-    }
-
-    traductor_label <- function(variable) {
-      if (!NROW(TRADUCTOR) || !all(c("VARIABLE", "Indicador") %in% names(TRADUCTOR))) return(variable)
-      idx <- match(variable, TRADUCTOR$VARIABLE)
-      if (length(idx) == 1L && !is.na(idx)) TRADUCTOR$Indicador[idx] else variable
-    }
+    traductor <- reactive(get0("TRADUCTOR", ifnotfound = data.frame(), inherits = TRUE))
 
     buf_applied <- reactiveVal(NULL)
 
@@ -125,19 +112,10 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
     })
 
     output$ui_buf_optim_var <- renderUI({
-      if (!length(INEGI_COL_MAP)) return(div(class = "smallHelp", "No hay variables INEGI disponibles"))
-      has_trad <- all(c("Eje", "VARIABLE", "Indicador") %in% names(TRADUCTOR))
-      if (!has_trad) {
-        vars <- names(INEGI_COL_MAP)
-        sel <- input$buf_optim_var %||% vars[1]
-        if (!(sel %in% vars)) sel <- vars[1]
-        return(selectInput(ns("buf_optim_var"), "Variable a maximizar",
-                           choices = as.list(setNames(vars, vars)), selected = sel))
-      }
+      trad <- traductor()
       eje <- input$buf_ejes %||% ""
-      if (!nzchar(eje) || NROW(TRADUCTOR) == 0) return(NULL)
-      sub <- TRADUCTOR[TRADUCTOR$Eje == eje, ]
-      sub <- sub[sub$VARIABLE %in% names(INEGI_COL_MAP), ]
+      if (!nzchar(eje) || NROW(trad) == 0) return(NULL)
+      sub <- trad[trad$Eje == eje, ]
       if (NROW(sub) == 0) return(NULL)
       ch <- setNames(sub$VARIABLE, sub$Indicador)
       sel <- sub$VARIABLE[1]
@@ -286,7 +264,9 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
         removeNotification("buf_calc")
         lbl_mode <- if (mode == "inegi") {
-          traductor_label(pick)
+          trad <- traductor()
+          idx <- match(pick, trad$VARIABLE)
+          if (!is.na(idx)) trad$Indicador[idx] else pick
         } else paste0("votos ", pick)
         showNotification(
           paste0("\u2713 ", length(selected_idx), " pt(s) \u00b7 ",
@@ -307,7 +287,9 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
       ba <- buf_applied()
       is_inegi <- identical(ba$mode, "inegi")
       lbl <- if (is_inegi) {
-        traductor_label(ba$party)
+        trad <- traductor()
+        idx <- match(ba$party, trad$VARIABLE)
+        if (!is.na(idx)) trad$Indicador[idx] else ba$party
       } else paste0("votos ", ba$party %||% "")
       div(class = "smallHelp", style = "color:#1E8E3E;",
           HTML(paste0(
@@ -698,18 +680,19 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
       party_num_cols <- setdiff(names(d), c(base_cols, inegi_sel))
 
       col_headers <- names(d)
+      trad <- traductor()
       for (i in seq_along(col_headers)) {
         cn <- col_headers[i]
         if (cn %in% party_num_cols) {
           logo_html <- party_logo_inline(cn, "16px")
           if (nzchar(logo_html)) col_headers[i] <- paste0(logo_html, cn)
-        } else if (cn %in% inegi_sel && NROW(TRADUCTOR) > 0 && all(c("VARIABLE", "Eje", "Indicador") %in% names(TRADUCTOR))) {
-          idx <- match(cn, TRADUCTOR$VARIABLE)
+        } else if (cn %in% inegi_sel && NROW(trad) > 0) {
+          idx <- match(cn, trad$VARIABLE)
           if (!is.na(idx)) {
             col_headers[i] <- paste0(
               "<span style='font-size:9px;color:#1A73E8;font-weight:700;'>",
-              TRADUCTOR$Eje[idx], "</span><br>",
-              "<span style='font-size:10px;'>", TRADUCTOR$Indicador[idx], "</span>")
+              trad$Eje[idx], "</span><br>",
+              "<span style='font-size:10px;'>", trad$Indicador[idx], "</span>")
           }
         }
       }
