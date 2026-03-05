@@ -172,13 +172,24 @@ party_from_col <- function(col, key, vote_type) {
 vote_cols_raw <- function(df, key, vote_type) {
   k   <- parse_key(key)
   nms <- names(df)
+
+  is_valid_distrib_label <- function(lbl) {
+    if (!nzchar(lbl %||% "")) return(FALSE)
+    if (lbl %in% PARTY_SET) return(TRUE)
+    if (!grepl("[_\\-]", lbl)) return(FALSE)
+    parts <- unlist(strsplit(lbl, "[_\\-]+"))
+    parts <- parts[nzchar(parts)]
+    if (!length(parts)) return(FALSE)
+    any(parts %in% PARTY_SET)
+  }
+
   if (vote_type == "CAND") {
     return(grep(paste0("^CAND_.*_", k$office, "_", k$yr2, "$"), nms, value = TRUE))
   }
   if (vote_type == "DISTRIBUIDO") {
-    cols <- grep(paste0("^[A-Z0-9]+_DISTRIBUIDO_", k$office, "_", k$yr2, "$"), nms, value = TRUE)
+    cols <- grep(paste0("^[A-Z0-9_\\-]+_DISTRIBUIDO_", k$office, "_", k$yr2, "$"), nms, value = TRUE)
     labs <- vapply(cols, party_from_col, character(1), key = key, vote_type = vote_type)
-    return(cols[labs %in% PARTY_SET])
+    return(cols[vapply(labs, is_valid_distrib_label, logical(1))])
   }
   cols <- grep(paste0("^[A-Z0-9]+_", k$office, "_", k$yr2, "$"), nms, value = TRUE)
   cols <- cols[!grepl("DISTRIBUIDO", cols, fixed = TRUE)]
