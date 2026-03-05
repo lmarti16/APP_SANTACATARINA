@@ -25,12 +25,14 @@ mod_pauta_ui <- function(id) {
           ),
           conditionalPanel(
             condition = paste0("input['", ns("buf_mode"), "'] == 'inegi'"),
-            if (length(ejes_disponibles) > 0) tagList(
-              selectInput(ns("buf_ejes"), "Eje",
-                          choices  = c("Selecciona..." = "", setNames(ejes_disponibles, ejes_disponibles)),
-                          selected = ""),
+            tagList(
+              if (length(ejes_disponibles) > 0) {
+                selectInput(ns("buf_ejes"), "Eje",
+                            choices  = c("Selecciona..." = "", setNames(ejes_disponibles, ejes_disponibles)),
+                            selected = "")
+              },
               uiOutput(ns("ui_buf_optim_var"))
-            ) else div(class = "smallHelp", "No hay variables INEGI disponibles")
+            )
           ),
           div(class = "sep"),
           sliderInput(ns("buf_radius"), "Radio (metros)",
