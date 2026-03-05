@@ -92,18 +92,7 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
                               main_tabs) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    get_traductor <- function() {
-      trad <- get0("TRADUCTOR", ifnotfound = data.frame(), inherits = TRUE)
-      if (!is.data.frame(trad)) return(data.frame())
-      trad
-    }
-
-    traductor_label <- function(variable) {
-      trad <- get_traductor()
-      if (!NROW(trad) || !all(c("VARIABLE", "Indicador") %in% names(trad))) return(variable)
-      idx <- match(variable, trad$VARIABLE)
-      if (length(idx) == 1L && !is.na(idx)) trad$Indicador[idx] else variable
-    }
+    traductor <- reactive(get0("TRADUCTOR", ifnotfound = data.frame(), inherits = TRUE))
 
     buf_applied <- reactiveVal(NULL)
 
@@ -121,8 +110,7 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
     })
 
     output$ui_buf_optim_var <- renderUI({
-      trad <- get_traductor()
-      if (!all(c("Eje", "VARIABLE", "Indicador") %in% names(trad))) return(NULL)
+      trad <- traductor()
       eje <- input$buf_ejes %||% ""
       if (!nzchar(eje) || NROW(trad) == 0) return(NULL)
       sub <- trad[trad$Eje == eje, ]
@@ -274,7 +262,9 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
         removeNotification("buf_calc")
         lbl_mode <- if (mode == "inegi") {
-          traductor_label(pick)
+          trad <- traductor()
+          idx <- match(pick, trad$VARIABLE)
+          if (!is.na(idx)) trad$Indicador[idx] else pick
         } else paste0("votos ", pick)
         showNotification(
           paste0("\u2713 ", length(selected_idx), " pt(s) \u00b7 ",
@@ -295,7 +285,9 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
       ba <- buf_applied()
       is_inegi <- identical(ba$mode, "inegi")
       lbl <- if (is_inegi) {
-        traductor_label(ba$party)
+        trad <- traductor()
+        idx <- match(ba$party, trad$VARIABLE)
+        if (!is.na(idx)) trad$Indicador[idx] else ba$party
       } else paste0("votos ", ba$party %||% "")
       div(class = "smallHelp", style = "color:#1E8E3E;",
           HTML(paste0(
@@ -686,13 +678,13 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
       party_num_cols <- setdiff(names(d), c(base_cols, inegi_sel))
 
       col_headers <- names(d)
-      trad <- get_traductor()
+      trad <- traductor()
       for (i in seq_along(col_headers)) {
         cn <- col_headers[i]
         if (cn %in% party_num_cols) {
           logo_html <- party_logo_inline(cn, "16px")
           if (nzchar(logo_html)) col_headers[i] <- paste0(logo_html, cn)
-        } else if (cn %in% inegi_sel && NROW(trad) > 0 && all(c("VARIABLE", "Eje", "Indicador") %in% names(trad))) {
+        } else if (cn %in% inegi_sel && NROW(trad) > 0) {
           idx <- match(cn, trad$VARIABLE)
           if (!is.na(idx)) {
             col_headers[i] <- paste0(
