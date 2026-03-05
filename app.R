@@ -66,6 +66,7 @@ message(">> INEGI: ", length(INEGI_COLS), " columnas, ", NROW(TRADUCTOR),
 # los módulos (source(..., local = FALSE)) buscan estos objetos en .GlobalEnv.
 assign("TRADUCTOR", TRADUCTOR, envir = .GlobalEnv)
 assign("EJES_DISPONIBLES", EJES_DISPONIBLES, envir = .GlobalEnv)
+assign("INEGI_COL_MAP", INEGI_COL_MAP, envir = .GlobalEnv)
 
 INIT_BBOX <- sf::st_bbox(sf_all)
 INIT_LNG  <- as.numeric((INIT_BBOX["xmin"] + INIT_BBOX["xmax"]) / 2)
