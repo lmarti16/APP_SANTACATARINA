@@ -23,7 +23,7 @@ mod_tiempo_ui <- function(id, elex = NULL, election_choices = NULL, default_elec
             selected = offices, inline = FALSE),
           radioButtons(ns("ts_vote_type"), "Votos para partidos",
                        choices = c("DISTRIBUIDO" = "DISTRIBUIDO", "PURO" = "PURO"),
-                       selected = "DISTRIBUIDO", inline = TRUE),
+                       selected = "PURO", inline = TRUE),
           radioButtons(ns("ts_party_metric"), "M\u00e9trica",
                        choices = c("Votos" = "votes", "%" = "pct"),
                        selected = "pct", inline = TRUE),
