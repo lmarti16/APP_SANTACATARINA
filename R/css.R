@@ -2,28 +2,42 @@
 # Tema bslib y CSS glassmorphism
 # ─────────────────────────────────────────────────────────────
 
+# Fallbacks para evitar errores de carga si globals.R aún no fue evaluado
+css_get <- function(name, default) get0(name, envir = .GlobalEnv, inherits = TRUE, ifnotfound = default)
+
+CSS_ACCENT     <- css_get("ACCENT", "#1A73E8")
+CSS_ACCENT2    <- css_get("ACCENT2", "#E8F0FE")
+CSS_ACCENT_RGB <- css_get("ACCENT_RGB", "26,115,232")
+CSS_BG         <- css_get("BG", "#F0F2F5")
+CSS_CARD_BG    <- css_get("CARD_BG", "rgba(255,255,255,0.72)")
+CSS_CARD_SOLID <- css_get("CARD_SOLID", "#FFFFFF")
+CSS_BORDER     <- css_get("BORDER", "rgba(218,220,224,0.55)")
+CSS_TXT        <- css_get("TXT", "#1A1D21")
+CSS_TXT_SEC    <- css_get("TXT_SEC", "#5F6368")
+CSS_MUTED      <- css_get("MUTED", "#80868B")
+
 app_theme <- bs_theme(
   bootswatch = "flatly",
-  primary    = ACCENT,
+  primary    = CSS_ACCENT,
   base_font  = font_google("DM Sans"),
   font_scale = 0.94,
-  bg         = BG,
-  fg         = TXT
+  bg         = CSS_BG,
+  fg         = CSS_TXT
 )
 
 app_css <- paste0('
 /* ── Variables ─────────────────────────────────── */
 :root {
-  --accent:     ', ACCENT, ';
-  --accent2:    ', ACCENT2, ';
-  --accent-rgb: ', ACCENT_RGB, ';
-  --bg:         ', BG, ';
-  --card:       ', CARD_BG, ';
-  --card-solid: ', CARD_SOLID, ';
-  --border:     ', BORDER, ';
-  --txt:        ', TXT, ';
-  --txt-sec:    ', TXT_SEC, ';
-  --muted:      ', MUTED, ';
+  --accent:     ', CSS_ACCENT, ';
+  --accent2:    ', CSS_ACCENT2, ';
+  --accent-rgb: ', CSS_ACCENT_RGB, ';
+  --bg:         ', CSS_BG, ';
+  --card:       ', CSS_CARD_BG, ';
+  --card-solid: ', CSS_CARD_SOLID, ';
+  --border:     ', CSS_BORDER, ';
+  --txt:        ', CSS_TXT, ';
+  --txt-sec:    ', CSS_TXT_SEC, ';
+  --muted:      ', CSS_MUTED, ';
   --radius:     16px;
   --radius-sm:  10px;
   --shadow:     0 2px 8px rgba(0,0,0,.06), 0 0px 1px rgba(0,0,0,.08);
