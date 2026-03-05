@@ -27,12 +27,10 @@ mod_tiempo_ui <- function(id, elex = NULL, election_choices = NULL, default_elec
           radioButtons(ns("ts_party_metric"), "M\u00e9trica",
                        choices = c("Votos" = "votes", "%" = "pct"),
                        selected = "pct", inline = TRUE),
-          selectizeInput(ns("ts_parties"), "Partidos (vac\u00edo = Top N)",
+          selectizeInput(ns("ts_parties"), "Partidos (vac\u00edo = autom\u00e1tico)",
                          choices = NULL, multiple = TRUE,
                          options = list(plugins = list("remove_button"),
                                         placeholder = "PRI, PAN\u2026")),
-          sliderInput(ns("ts_top_n"), "Top N", min = 3, max = 15, value = 8, step = 1),
-          checkboxInput(ns("ts_include_other"), "Incluir OTROS", value = FALSE),
           div(class = "sep"),
           div(class = "sec-label", "Mapa comparativo"),
           div(class = "smallHelp", HTML(
@@ -142,7 +140,7 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
       keys
     })
 
-    observeEvent(list(has_applied(), input$ts_vote_type, input$ts_include_other, input$ts_offices), {
+    observeEvent(list(has_applied(), input$ts_vote_type, input$ts_offices), {
       req(has_applied()); df <- df_applied()
       vt <- input$ts_vote_type %||% "DISTRIBUIDO"
       out <- character(0)
@@ -154,7 +152,7 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
         ok  <- names(tot)[is.finite(tot) & tot > 0]
         out <- unique(c(out, ok))
       }
-      if (!isTRUE(input$ts_include_other)) out <- setdiff(out, "OTROS")
+      out <- setdiff(out, "OTROS")
       out <- sort(unique(out))
       cur_sel <- isolate(input$ts_parties) %||% character(0)
       default_sel <- intersect(c("PRI", "PAN", "MORENA", "MC", "PVEM", "PT", "PRD"), out)
@@ -191,19 +189,19 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
       df <- df_applied(); keys <- ts_keys(); vt <- input$ts_vote_type %||% "DISTRIBUIDO"
       metric <- input$ts_party_metric %||% "pct"
       sel <- toupper(input$ts_parties %||% character(0))
-      if (!isTRUE(input$ts_include_other)) sel <- setdiff(sel, "OTROS")
+      sel <- setdiff(sel, "OTROS")
 
       if (length(sel) == 0L) {
         acc <- list()
         for (k in keys) {
           gv <- group_votes_matrix(df, k, vt); if (is.null(gv$G)) next
           tot <- colSums(gv$G, na.rm = TRUE)
-          if (!isTRUE(input$ts_include_other)) tot <- tot[names(tot) != "OTROS"]
+          tot <- tot[names(tot) != "OTROS"]
           tot <- tot[is.finite(tot) & tot > 0]
           for (nm in names(tot)) acc[[nm]] <- (acc[[nm]] %||% 0) + as.numeric(tot[[nm]])
         }
         ord <- order(unlist(acc), decreasing = TRUE)
-        sel <- names(acc)[ord][seq_len(min(as.integer(input$ts_top_n %||% 8L), length(ord)))]
+        sel <- names(acc)[ord][seq_len(min(8L, length(ord)))]
       }
 
       rows <- list()
