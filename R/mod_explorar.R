@@ -221,6 +221,16 @@ mod_explorar_server <- function(id, has_applied, applied, df_applied,
                         label = lapply(lab, HTML),
                         highlightOptions = highlightOptions(color = ACCENT, weight = 2, bringToFront = TRUE)) |>
             suppressWarnings(addLegend(position = "bottomright", pal = res$pal, values = legend_vals, title = ttl, opacity = 0.9))
+          vv <- legend_vals[is.finite(legend_vals)]
+          if (length(vv) == 0) vv <- c(0, 1)
+          qv <- as.numeric(stats::quantile(vv, probs = c(0.1, 0.5, 0.9), na.rm = TRUE, type = 7))
+          qv <- pmax(min(vv), pmin(max(vv), qv))
+          rows <- c(
+            legend_row_chip(paste0("Bajo: ", if ((ap$choro_metric %||% "pct") == "pct") fmt_pct(qv[1]) else fmt_int(qv[1])), color = res$pal(qv[1])),
+            legend_row_chip(paste0("Medio: ", if ((ap$choro_metric %||% "pct") == "pct") fmt_pct(qv[2]) else fmt_int(qv[2])), color = res$pal(qv[2])),
+            legend_row_chip(paste0("Alto: ", if ((ap$choro_metric %||% "pct") == "pct") fmt_pct(qv[3]) else fmt_int(qv[3])), color = res$pal(qv[3]))
+          )
+          proxy <- add_html_legend(proxy, title = paste0(pick, " · ", if ((ap$choro_metric %||% "pct") == "pct") "%" else "Votos"), rows = rows)
         } else {
           mv <- ap$map_view %||% "winner"
           if (mv == "winner") {
@@ -235,15 +245,17 @@ mod_explorar_server <- function(id, has_applied, applied, df_applied,
             leg_vals <- sort(unique(df$WINNER[!is.na(df$WINNER)]))
             if (length(leg_vals) > 0L) {
               leg_cols <- vapply(leg_vals, fill_color_winner, character(1))
-              proxy <- proxy |>
-                suppressWarnings(addLegend(position = "bottomright", colors = as.vector(leg_cols),
-                                           labels = as.vector(leg_vals),
-                                           title = paste0("Ganador (", ap$winner_vote_type, ")"), opacity = 0.9))
+              rows <- vapply(seq_along(leg_vals), function(i) {
+                lg <- party_logo_inline(leg_vals[i], "14px")
+                legend_row_chip(leg_vals[i], color = leg_cols[i], logo = lg)
+              }, character(1))
+              proxy <- add_html_legend(proxy,
+                                       title = paste0("Ganador (", ap$winner_vote_type, ")"),
+                                       rows = rows)
             } else {
-              proxy <- proxy |>
-                suppressWarnings(addLegend(position = "bottomright", colors = "#DADCE0",
-                                           labels = "Sin datos", title = paste0("Ganador (", ap$winner_vote_type, ")"),
-                                           opacity = 0.9))
+              proxy <- add_html_legend(proxy,
+                                       title = paste0("Ganador (", ap$winner_vote_type, ")"),
+                                       rows = legend_row_chip("Sin datos", color = "#DADCE0"))
             }
           } else {
             v <- switch(mv, part = x$part, tot = x$tot, ln = x$ln, x$tot)
@@ -259,6 +271,16 @@ mod_explorar_server <- function(id, has_applied, applied, df_applied,
                           label = lapply(lab, HTML),
                           highlightOptions = highlightOptions(color = ACCENT, weight = 2, bringToFront = TRUE)) |>
               suppressWarnings(addLegend(position = "bottomright", pal = pal, values = legend_vals, title = ttl, opacity = 0.9))
+            vv <- legend_vals[is.finite(legend_vals)]
+            if (length(vv) == 0) vv <- c(0, 1)
+            qv <- as.numeric(stats::quantile(vv, probs = c(0.1, 0.5, 0.9), na.rm = TRUE, type = 7))
+            qv <- pmax(min(vv), pmin(max(vv), qv))
+            rows <- c(
+              legend_row_chip(paste0("Bajo: ", if (mv == "part") fmt_pct(qv[1]) else fmt_int(qv[1])), color = pal(qv[1])),
+              legend_row_chip(paste0("Medio: ", if (mv == "part") fmt_pct(qv[2]) else fmt_int(qv[2])), color = pal(qv[2])),
+              legend_row_chip(paste0("Alto: ", if (mv == "part") fmt_pct(qv[3]) else fmt_int(qv[3])), color = pal(qv[3]))
+            )
+            proxy <- add_html_legend(proxy, title = ttl, rows = rows)
           }
         }
 
