@@ -413,7 +413,12 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
 
             gv_r <- group_votes_matrix(df, ref_key,  vt); G_r <- gv_r$G
             gv_c <- group_votes_matrix(df, comp_key, vt); G_c <- gv_c$G
-            if (is.null(G_r) || ncol(G_r) == 0L) return()
+            if (is.null(G_r) || ncol(G_r) == 0L) {
+              proxy <- proxy |>
+                suppressWarnings(addLegend(position = "bottomright", colors = "#DADCE0",
+                                           labels = "Sin datos", title = "Δ Partido", opacity = 0.9))
+              return()
+            }
 
             if (is.null(pick) || !nzchar(pick)) pick <- if ("PRI" %in% colnames(G_r)) "PRI" else colnames(G_r)[1]
             if (!(pick %in% colnames(G_r))) pick <- colnames(G_r)[1]
