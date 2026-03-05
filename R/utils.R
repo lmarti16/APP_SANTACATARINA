@@ -211,6 +211,24 @@ read_csv_flex <- function(path) {
   fread(path)
 }
 
+# ==========================================================
+# INEGI HELPERS
+# ==========================================================
+get_inegi_col_map <- function(sf_obj = NULL) {
+  inegi_map <- get0("INEGI_COL_MAP", ifnotfound = NULL, inherits = TRUE)
+  if (is.character(inegi_map) && length(inegi_map) > 0 && !is.null(names(inegi_map))) {
+    return(inegi_map)
+  }
+
+  src <- sf_obj
+  if (is.null(src)) src <- get0("sf_all", ifnotfound = NULL, inherits = TRUE)
+  if (is.null(src)) return(setNames(character(0), character(0)))
+
+  inegi_cols <- grep("_INEGI$", names(src), value = TRUE)
+  inegi_vars <- sub("_INEGI$", "", inegi_cols)
+  setNames(inegi_cols, inegi_vars)
+}
+
 safe_num_matrix <- function(df, cols) {
   cols <- cols[cols %in% names(df)]
   if (!length(cols)) return(NULL)
