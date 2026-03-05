@@ -4,6 +4,7 @@
 
 mod_pauta_ui <- function(id) {
   ns <- NS(id)
+  ejes_disponibles <- get0("EJES_DISPONIBLES", ifnotfound = character(0), inherits = TRUE)
   div(
     style = "padding:12px;",
     layout_columns(
@@ -24,9 +25,9 @@ mod_pauta_ui <- function(id) {
           ),
           conditionalPanel(
             condition = paste0("input['", ns("buf_mode"), "'] == 'inegi'"),
-            if (length(EJES_DISPONIBLES) > 0) tagList(
+            if (length(ejes_disponibles) > 0) tagList(
               selectInput(ns("buf_ejes"), "Eje",
-                          choices  = c("Selecciona..." = "", setNames(EJES_DISPONIBLES, EJES_DISPONIBLES)),
+                          choices  = c("Selecciona..." = "", setNames(ejes_disponibles, ejes_disponibles)),
                           selected = ""),
               uiOutput(ns("ui_buf_optim_var"))
             ) else div(class = "smallHelp", "No hay variables INEGI disponibles")
@@ -108,9 +109,10 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
     })
 
     output$ui_buf_optim_var <- renderUI({
+      traductor <- get0("TRADUCTOR", ifnotfound = data.frame(), inherits = TRUE)
       eje <- input$buf_ejes %||% ""
-      if (!nzchar(eje) || NROW(TRADUCTOR) == 0) return(NULL)
-      sub <- TRADUCTOR[TRADUCTOR$Eje == eje, ]
+      if (!nzchar(eje) || NROW(traductor) == 0) return(NULL)
+      sub <- traductor[traductor$Eje == eje, ]
       if (NROW(sub) == 0) return(NULL)
       ch <- setNames(sub$VARIABLE, sub$Indicador)
       sel <- sub$VARIABLE[1]

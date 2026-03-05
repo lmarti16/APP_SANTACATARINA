@@ -62,10 +62,18 @@ EJES_DISPONIBLES <- if (NROW(TRADUCTOR) > 0) unique(TRADUCTOR$Eje) else characte
 message(">> INEGI: ", length(INEGI_COLS), " columnas, ", NROW(TRADUCTOR),
         " en traductor, ", length(EJES_DISPONIBLES), " ejes")
 
+# Compatibilidad de entorno: cuando la app corre en un entorno local,
+# los módulos (source(..., local = FALSE)) buscan estos objetos en .GlobalEnv.
+assign("TRADUCTOR", TRADUCTOR, envir = .GlobalEnv)
+assign("EJES_DISPONIBLES", EJES_DISPONIBLES, envir = .GlobalEnv)
+
 INIT_BBOX <- sf::st_bbox(sf_all)
 INIT_LNG  <- as.numeric((INIT_BBOX["xmin"] + INIT_BBOX["xmax"]) / 2)
 INIT_LAT  <- as.numeric((INIT_BBOX["ymin"] + INIT_BBOX["ymax"]) / 2)
 INIT_ZOOM <- 12L
+
+# Exponer bbox para helpers/modulos que lo evalúan fuera del entorno local de app.R.
+assign("INIT_BBOX", INIT_BBOX, envir = .GlobalEnv)
 
 SECC_DL_COL      <- if ("DISTRITO_L" %in% names(sf_all)) "DISTRITO_L" else NA_character_
 SECC_DL_NAME_COL <- pick_col(names(sf_all), c("NOMBRE_DISTRITO_LOCAL", "NOM_DISTRITO_LOCAL"))
@@ -89,6 +97,9 @@ elex[, key        := paste0(office, "_", yr2)]
 elex[, label      := paste0(year, " \u00b7 ", office_lbl)]
 elex[, office_ord := match(office, c("PRES", "GOB", "SEN", "DF", "DL", "ALC"))]
 setorder(elex, year, office_ord)
+
+# Exponer catálogo electoral para helpers de data.R que usan parse_key()/key_label().
+assign("elex", elex, envir = .GlobalEnv)
 
 ELECTION_CHOICES <- setNames(elex$key, elex$label)
 
