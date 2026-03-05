@@ -25,12 +25,14 @@ mod_pauta_ui <- function(id) {
           ),
           conditionalPanel(
             condition = paste0("input['", ns("buf_mode"), "'] == 'inegi'"),
-            if (length(ejes_disponibles) > 0) tagList(
-              selectInput(ns("buf_ejes"), "Eje",
-                          choices  = c("Selecciona..." = "", setNames(ejes_disponibles, ejes_disponibles)),
-                          selected = ""),
+            tagList(
+              if (length(ejes_disponibles) > 0) {
+                selectInput(ns("buf_ejes"), "Eje",
+                            choices  = c("Selecciona..." = "", setNames(ejes_disponibles, ejes_disponibles)),
+                            selected = "")
+              },
               uiOutput(ns("ui_buf_optim_var"))
-            ) else div(class = "smallHelp", "No hay variables INEGI disponibles")
+            )
           ),
           div(class = "sep"),
           sliderInput(ns("buf_radius"), "Radio (metros)",
@@ -123,7 +125,8 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
     buf_inegi_vars <- reactive({
       v <- input$buf_optim_var %||% ""
-      if (nzchar(v) && v %in% names(INEGI_COL_MAP)) v else character(0)
+      inegi_map <- get_inegi_col_map()
+      if (nzchar(v) && v %in% names(inegi_map)) v else character(0)
     })
 
     df_pauta_universe <- reactive({
@@ -161,7 +164,8 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
         if (mode == "inegi") {
           optim_var <- input$buf_optim_var %||% ""
-          col_nm    <- INEGI_COL_MAP[[optim_var]]
+          inegi_map <- get_inegi_col_map()
+          col_nm    <- inegi_map[[optim_var]]
           if (is.null(col_nm) || !(col_nm %in% names(univ))) {
             showNotification("Selecciona variable INEGI para maximizar.", type = "warning"); return()
           }
@@ -617,8 +621,9 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
         inegi_sel <- buf_inegi_vars()
         if (length(inegi_sel) > 0) {
+          inegi_map <- get_inegi_col_map()
           for (v in inegi_sel) {
-            col_nm <- INEGI_COL_MAP[[v]]
+            col_nm <- inegi_map[[v]]
             if (!is.null(col_nm) && col_nm %in% names(univ)) {
               row[[v]] <- sum(as_num(univ[[col_nm]][inside]), na.rm = TRUE)
             }
@@ -656,8 +661,9 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
       }
       inegi_sel <- buf_inegi_vars()
       if (length(inegi_sel) > 0) {
+        inegi_map <- get_inegi_col_map()
         for (v in inegi_sel) {
-          col_nm <- INEGI_COL_MAP[[v]]
+          col_nm <- inegi_map[[v]]
           if (!is.null(col_nm) && col_nm %in% names(univ)) {
             total_row[[v]] <- sum(as_num(univ[[col_nm]][all_inside]), na.rm = TRUE)
           }
