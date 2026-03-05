@@ -715,7 +715,11 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
                      "LNG", "LAT", "DIRECCION",
                      "TOTAL_VOTOS", "LISTA_NOMINAL", "PARTICIPACION")
       inegi_sel <- buf_inegi_vars()
-      party_num_cols <- setdiff(names(d), c(base_cols, inegi_sel))
+      inegi_cols_present <- intersect(names(d), names(INEGI_COL_MAP_LOCAL))
+      party_num_cols <- setdiff(names(d), c(base_cols, inegi_cols_present))
+
+      trad_has_cols <- NROW(TRADUCTOR) > 0 && all(c("VARIABLE", "Eje", "Indicador") %in% names(TRADUCTOR))
+      trad_var_up <- if (trad_has_cols) toupper(trimws(as.character(TRADUCTOR$VARIABLE))) else character(0)
 
       col_headers <- names(d)
       trad <- traductor()
