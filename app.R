@@ -213,7 +213,7 @@ ui_base <- page_fillable(
       id = "main_tabs",
 
       nav_panel("Explorar",  mod_explorar_ui("explorar")),
-      nav_panel("Tiempo",    mod_tiempo_ui("tiempo")),
+      nav_panel("Tiempo",    mod_tiempo_ui("tiempo", elex = elex, election_choices = ELECTION_CHOICES, default_election = DEFAULT_ELECTION)),
       nav_panel("PAUTA",     mod_pauta_ui("pauta")),
 
       # ══ TAB: LÉEME ══════════════════════════════════
@@ -497,7 +497,9 @@ server <- function(input, output, session) {
     clipped_overlays   = clipped_overlays,
     current_overlay_groups = current_overlay_groups,
     main_tabs          = reactive(input$main_tabs),
-    election_input     = reactive(input$election)
+    election_input     = reactive(input$election),
+    elex               = elex,
+    default_election   = DEFAULT_ELECTION
   )
 
   mod_pauta_server(

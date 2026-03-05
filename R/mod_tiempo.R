@@ -3,8 +3,14 @@
 # Series temporales de partidos, métricas, participación, mapa comparativo
 # ─────────────────────────────────────────────────────────────
 
-mod_tiempo_ui <- function(id) {
+mod_tiempo_ui <- function(id, elex = NULL, election_choices = NULL, default_election = NULL) {
   ns <- NS(id)
+
+  offices <- sort(unique((elex %||% data.frame(office = character(0)))$office))
+  office_labels_ui <- if (length(offices) > 0) vapply(offices, label_office, character(1)) else character(0)
+  election_choices_ui <- election_choices %||% setNames(character(0), character(0))
+  default_election_ui <- default_election %||% (if (!is.null(elex) && NROW(elex) > 0) head(elex$key, 1) else NULL)
+
   div(
     style = "padding:12px;",
     layout_columns(
@@ -13,9 +19,8 @@ mod_tiempo_ui <- function(id) {
           h5("Configuraci\u00f3n", class = "blockTitle mb-2"),
           checkboxGroupInput(
             ns("ts_offices"), "Tipo de elecci\u00f3n",
-            choices  = setNames(sort(unique(elex$office)),
-                                vapply(sort(unique(elex$office)), label_office, character(1))),
-            selected = sort(unique(elex$office)), inline = FALSE),
+            choices  = setNames(offices, office_labels_ui),
+            selected = offices, inline = FALSE),
           radioButtons(ns("ts_vote_type"), "Votos para partidos",
                        choices = c("DISTRIBUIDO" = "DISTRIBUIDO", "PURO" = "PURO"),
                        selected = "DISTRIBUIDO", inline = TRUE),
@@ -33,8 +38,8 @@ mod_tiempo_ui <- function(id) {
           div(class = "smallHelp", HTML(
             "<b>Ref</b> = elecci\u00f3n del sidebar &nbsp;\u00b7&nbsp; <b>Comp</b> = selector abajo")),
           selectInput(ns("ts_map_election"), NULL,
-                      choices  = ELECTION_CHOICES,
-                      selected = head(elex$key, 1) %||% DEFAULT_ELECTION),
+                      choices  = election_choices_ui,
+                      selected = default_election_ui),
           radioButtons(ns("ts_map_view"), NULL,
                        choices = c("Participaci\u00f3n (pp)" = "participacion",
                                    "Lista nominal" = "lista",
@@ -91,15 +96,19 @@ mod_tiempo_ui <- function(id) {
 
 mod_tiempo_server <- function(id, has_applied, applied, df_applied,
                                clipped_overlays, current_overlay_groups,
-                               main_tabs, election_input) {
+                               main_tabs, election_input,
+                               elex, default_election) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    elex_local <- elex %||% data.table(office = character(0), key = character(0))
+    default_election_local <- default_election %||% (if (NROW(elex_local) > 0) elex_local$key[1] else NULL)
+
     ts_keys <- reactive({
       req(has_applied())
-      sel  <- input$ts_offices %||% sort(unique(elex$office))
-      keys <- elex$key[elex$office %in% sel]
-      if (!length(keys)) keys <- elex$key
+      sel  <- input$ts_offices %||% sort(unique(elex_local$office))
+      keys <- elex_local$key[elex_local$office %in% sel]
+      if (!length(keys)) keys <- elex_local$key
       keys
     })
 
@@ -128,8 +137,8 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
 
     output$ui_ts_choro_party <- renderUI({
       req(has_applied()); df <- df_applied()
-      ref_key  <- election_input()        %||% DEFAULT_ELECTION
-      comp_key <- input$ts_map_election %||% DEFAULT_ELECTION
+      ref_key  <- election_input()        %||% default_election_local
+      comp_key <- input$ts_map_election %||% default_election_local
       out <- get_valid_distribuido_parties(df, c(ref_key, comp_key))
       validate(need(length(out) > 0L, "Sin partidos"))
       def <- if ("PRI" %in% out) "PRI" else out[1]
@@ -138,8 +147,8 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
 
     output$ts_map_subtitle <- renderUI({
       if (!has_applied()) return(span("Presiona GENERAR", style = "color:var(--muted);"))
-      ref_key  <- election_input()        %||% DEFAULT_ELECTION
-      comp_key <- input$ts_map_election %||% DEFAULT_ELECTION
+      ref_key  <- election_input()        %||% default_election_local
+      comp_key <- input$ts_map_election %||% default_election_local
       n_secc   <- NROW(df_applied())
       span(HTML(paste0(
         "\u0394 = <b>", key_label(ref_key), "</b> \u2212 <b>", key_label(comp_key), "</b>",
@@ -309,8 +318,8 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
         req(NROW(df) > 0)
 
         tryCatch({
-          ref_key  <- election_input()        %||% DEFAULT_ELECTION
-          comp_key <- input$ts_map_election  %||% DEFAULT_ELECTION
+          ref_key  <- election_input()        %||% default_election_local
+          comp_key <- input$ts_map_election  %||% default_election_local
           view     <- input$ts_map_view     %||% "choro_party"
           scale    <- input$ts_delta_scale  %||% "linear"
           opac     <- input$ts_map_opacity  %||% 0.70
