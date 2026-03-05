@@ -1,0 +1,221 @@
+﻿Eje,Indicador,VARIABLE
+Población,Población total,POBTOT
+Población,Población femenina,POBFEM
+Población,Población masculina,POBMAS
+Población,Población de 0 a 2 años,P_0A2
+Población,Población femenina de 0 a 2 años,P_0A2_F
+Población,Población masculina de 0 a 2 años,P_0A2_M
+Población,Población de 0 a 17 años,P_0A17
+Población,Población de 3 años y más,P_3YMAS
+Población,Población femenina de 3 años y más,P_3YMAS_F
+Población,Población masculina de 3 años y más,P_3YMAS_M
+Población,Población de 5 años y más,P_5YMAS
+Población,Población femenina de 5 años y más,P_5YMAS_F
+Población,Población masculina de 5 años y más,P_5YMAS_M
+Población,Población de 12 años y más,P_12YMAS
+Población,Población femenina de 12 años y más,P_12YMAS_F
+Población,Población masculina de 12 años y más,P_12YMAS_M
+Población,Población de 15 años y más,P_15YMAS
+Población,Población femenina de 15 años y más,P_15YMAS_F
+Población,Población masculina de 15 años y más,P_15YMAS_M
+Población,Población de 18 años y más,P_18YMAS
+Población,Población femenina de 18 años y más,P_18YMAS_F
+Población,Población masculina de 18 años y más,P_18YMAS_M
+Población,Población de 3 a 5 años,P_3A5
+Población,Población femenina de 3 a 5 años,P_3A5_F
+Población,Población masculina de 3 a 5 años,P_3A5_M
+Población,Población de 6 a 11 años,P_6A11
+Población,Población femenina de 6 a 11 años,P_6A11_F
+Población,Población masculina de 6 a 11 años,P_6A11_M
+Población,Población de 8 a 14 años,P_8A14
+Población,Población femenina de 8 a 14 años,P_8A14_F
+Población,Población masculina de 8 a 14 años,P_8A14_M
+Población,Población de 12 a 14 años,P_12A14
+Población,Población femenina de 12 a 14 años,P_12A14_F
+Población,Población masculina de 12 a 14 años,P_12A14_M
+Población,Población de 15 a 17 años,P_15A17
+Población,Población femenina de 15 a 17 años,P_15A17_F
+Población,Población masculina de 15 a 17 años,P_15A17_M
+Población,Población de 18 a 24 años,P_18A24
+Población,Población femenina de 18 a 24 años,P_18A24_F
+Población,Población masculina de 18 a 24 años,P_18A24_M
+Población,Población femenina de 15 a 49 años ,P_15A49_F
+Población,Población de 60 años y más,P_60YMAS
+Población,Población femenina de 60 años y más,P_60YMAS_F
+Población,Población masculina de 60 años y más,P_60YMAS_M
+Población,Relación hombres-mujeres,REL_H_M
+Población,Población de 0 a 14 años,POB0_14
+Población,Población de 15 a 64 años,POB15_64
+Población,Población de 65 años y más,POB65_MAS
+Población,Población de edad no especificada,POB_EDADNE
+Fecundidad,Promedio de hijas e hijos nacidos vivos,PROM_HNV
+Migración,Población nacida en la entidad,PNACENT
+Migración,Población femenina nacida en la entidad,PNACENT_F
+Migración,Población masculina nacida en la entidad,PNACENT_M
+Migración,Población nacida en otra entidad,PNACOE
+Migración,Población femenina nacida en otra entidad,PNACOE_F
+Migración,Población masculina nacida en otra entidad,PNACOE_M
+Migración,Población de 5 años y más residente en la entidad en marzo de 2015,PRES2015
+Migración,Población femenina de 5 años y más residente en la entidad en marzo de 2015,PRES2015_F
+Migración,Población masculina de 5 años y más residente en la entidad en marzo de 2015,PRES2015_M
+Migración,Población de 5 años y más residente en otra entidad en marzo de 2015,PRESOE15
+Migración,Población femenina de 5 años y más residente en otra entidad en marzo de 2015,PRESOE15_F
+Migración,Población masculina de 5 años y más residente en otra entidad en marzo de 2015,PRESOE15_M
+Etnicidad,Población de 3 años y más que habla alguna lengua indígena,P3YM_HLI
+Etnicidad,Población femenina de 3 años y más que habla alguna lengua indígena,P3YM_HLI_F
+Etnicidad,Población masculina de 3 años y más que habla alguna lengua indígena,P3YM_HLI_M
+Etnicidad,Población de 3 años y más que habla alguna lengua indígena y no habla español,P3HLINHE
+Etnicidad,Población femenina de 3 años y más que habla alguna lengua indígena y no habla español,P3HLINHE_F
+Etnicidad,Población masculina de 3 años y más que habla alguna lengua indígena y no habla español,P3HLINHE_M
+Etnicidad,Población de 3 años y más que habla alguna lengua indígena y habla español,P3HLI_HE
+Etnicidad,Población femenina de 3 años y más que habla alguna lengua indígena y habla español,P3HLI_HE_F
+Etnicidad,Población masculina de 3 años y más que habla alguna lengua indígena y habla español,P3HLI_HE_M
+Etnicidad,Población de 5 años y más que habla alguna lengua indígena,P5_HLI
+Etnicidad,Población de 5 años y más que habla alguna lengua indígena y no habla español,P5_HLI_NHE
+Etnicidad,Población de 5 años y más que habla alguna lengua indígena y habla español,P5_HLI_HE
+Etnicidad,Población en hogares censales indígenas,PHOG_IND
+Etnicidad,Población que se considera afromexicana o afrodescendiente,POB_AFRO
+Etnicidad,Población femenina que se considera afromexicana o afrodescendiente,POB_AFRO_F
+Etnicidad,Población masculina que se considera afromexicana o afrodescendiente,POB_AFRO_M
+Discapacidad,Población con discapacidad,PCON_DISC
+Discapacidad,"Población con discapacidad para caminar, subir o bajar",PCDISC_MOT
+Discapacidad,"Población con discapacidad para ver, aun usando lentes",PCDISC_VIS
+Discapacidad,Población con discapacidad para hablar o comunicarse,PCDISC_LEN
+Discapacidad,"Población con discapacidad para oír, aun usando aparato auditivo",PCDISC_AUD
+Discapacidad,"Población con discapacidad para vestirse, bañarse o comer",PCDISC_M_A
+Discapacidad,Población con discapacidad para recordar o concentrarse,PCDISC_MEN
+Discapacidad,Población con limitación,PCON_LIMI
+Discapacidad,"Población con limitación para caminar, subir o bajar",PCLIM_CSB
+Discapacidad,"Población con limitación para ver, aun usando lentes",PCLIM_VIS
+Discapacidad,Población con limitación para hablar o comunicarse,PCLIM_HACO
+Discapacidad,"Población con limitación para oír, aun usando aparato auditivo",PCLIM_OAUD
+Discapacidad,"Población con limitación para vestirse, bañarse o comer",PCLIM_MOT2
+Discapacidad,Población con limitación para recordar o concentrarse,PCLIM_RE_C
+Discapacidad,Población con algún problema o condición mental,PCLIM_PMEN
+Discapacidad,"Población sin discapacidad, limitación, problema o condición mental",PSIND_LIM
+Educación,Población de 3 a 5 años que no asiste a la escuela,P3A5_NOA
+Educación,Población femenina de 3 a 5 años que no asiste a la escuela,P3A5_NOA_F
+Educación,Población masculina de 3 a 5 años que no asiste a la escuela,P3A5_NOA_M
+Educación,Población de 6 a 11 años que no asiste a la escuela,P6A11_NOA
+Educación,Población femenina de 6 a 11 años que no asiste a la escuela,P6A11_NOAF
+Educación,Población masculina de 6 a 11 años que no asiste a la escuela,P6A11_NOAM
+Educación,Población de 12 a 14 años que no asiste a la escuela,P12A14NOA
+Educación,Población femenina de 12 a 14 años que no asiste a la escuela,P12A14NOAF
+Educación,Población masculina de 12 a 14 años que no asiste a la escuela,P12A14NOAM
+Educación,Población de 15 a 17 años que asiste a la escuela,P15A17A
+Educación,Población femenina de 15 a 17 años que asiste a la escuela,P15A17A_F
+Educación,Población masculina de 15 a 17 años que asiste a la escuela,P15A17A_M
+Educación,Población de 18 a 24 años que asiste a la escuela,P18A24A
+Educación,Población femenina de 18 a 24 años que asiste a la escuela,P18A24A_F
+Educación,Población masculina de 18 a 24 años que asiste a la escuela,P18A24A_M
+Educación,Población de 8 a 14 años que no sabe leer y escribir,P8A14AN
+Educación,Población femenina de 8 a 14 años que no sabe leer y escribir,P8A14AN_F
+Educación,Población masculina de 8 a 14 años que no sabe leer y escribir,P8A14AN_M
+Educación,Población de 15 años y más analfabeta,P15YM_AN
+Educación,Población femenina de 15 años y más analfabeta,P15YM_AN_F
+Educación,Población masculina de 15 años y más analfabeta,P15YM_AN_M
+Educación,Población de 15 años y más sin escolaridad,P15YM_SE
+Educación,Población femenina de 15 años y más sin escolaridad,P15YM_SE_F
+Educación,Población masculina de 15 años y más sin escolaridad,P15YM_SE_M
+Educación,Población de 15 años y más con primaria incompleta,P15PRI_IN
+Educación,Población femenina de 15 años y más con primaria incompleta,P15PRI_INF
+Educación,Población masculina de 15 años y más con primaria incompleta,P15PRI_INM
+Educación,Población de 15 años y más con primaria completa,P15PRI_CO
+Educación,Población femenina de 15 años y más con primaria completa,P15PRI_COF
+Educación,Población masculina de 15 años y más con primaria completa,P15PRI_COM
+Educación,Población de 15 años y más con secundaria incompleta,P15SEC_IN
+Educación,Población femenina de 15 años y más con secundaria incompleta,P15SEC_INF
+Educación,Población masculina de 15 años y más con secundaria incompleta,P15SEC_INM
+Educación,Población de 15 años y más con secundaria completa,P15SEC_CO
+Educación,Población femenina de 15 años y más con secundaria completa,P15SEC_COF
+Educación,Población masculina de 15 años y más con secundaria completa,P15SEC_COM
+Educación,Población de 18 años y más con educación posbásica,P18YM_PB
+Educación,Población femenina de 18 años y más con educación posbásica,P18YM_PB_F
+Educación,Población masculina de 18 años y más con educación posbásica,P18YM_PB_M
+Educación,Grado promedio de escolaridad,GRAPROES
+Educación,Grado promedio de escolaridad de la población femenina,GRAPROES_F
+Educación,Grado promedio de escolaridad de la población masculina,GRAPROES_M
+Características económicas,Población de 12 años y más económicamente activa,PEA
+Características económicas,Población femenina de 12 años y más económicamente activa,PEA_F
+Características económicas,Población masculina de 12 años y más económicamente activa,PEA_M
+Características económicas,Población de 12 años y más no económicamente activa,PE_INAC
+Características económicas,Población femenina de 12 años y más no económicamente activa,PE_INAC_F
+Características económicas,Población masculina de 12 años y más no económicamente activa,PE_INAC_M
+Características económicas,Población de 12 años y más ocupada,POCUPADA
+Características económicas,Población femenina de 12 años y más ocupada,POCUPADA_F
+Características económicas,Población masculina de 12 años y más ocupada,POCUPADA_M
+Características económicas,Población de 12 años y más desocupada,PDESOCUP
+Características económicas,Población femenina de 12 años y más desocupada,PDESOCUP_F
+Características económicas,Población masculina de 12 años y más desocupada,PDESOCUP_M
+Servicios de salud,Población sin afiliación a servicios de salud,PSINDER
+Servicios de salud,Población afiliada a servicios de salud,PDER_SS
+Servicios de salud,Población afiliada a servicios de salud en el IMSS,PDER_IMSS
+Servicios de salud,Población afiliada a servicios de salud en el ISSSTE,PDER_ISTE
+Servicios de salud,Población afiliada a servicios de salud en el ISSSTE estatal,PDER_ISTEE
+Servicios de salud,"Población afiliada a servicios de salud en PEMEX, Defensa o Marina",PAFIL_PDOM
+Servicios de salud,Población afiliada a servicios de salud en el Instituto de Salud para el Bienestar,PDER_SEGP
+Servicios de salud,Población afiliada a servicios de salud en el IMSS BIENESTAR,PDER_IMSSB
+Servicios de salud,Población afiliada a servicios de salud en una institución privada,PAFIL_IPRI
+Servicios de salud,Población afiliada a servicios de salud en otra institución,PAFIL_OTRA
+Situación conyugal,Población de 12 años y más soltera o nunca unida,P12YM_SOLT
+Situación conyugal,Población de 12 años y más casada o unida,P12YM_CASA
+Situación conyugal,Población de 12 años y más que estuvo casada o unida,P12YM_SEPA
+Hogares censales,Total de hogares censales,TOTHOG
+Hogares censales,Hogares censales con persona de referencia mujer,HOGJEF_F
+Hogares censales,Hogares censales con persona de referencia hombre,HOGJEF_M
+Hogares censales,Población en hogares censales,POBHOG
+Hogares censales,Población en hogares censales con persona de referencia mujer,PHOGJEF_F
+Hogares censales,Población en hogares censales con persona de referencia hombre,PHOGJEF_M
+Vivienda,Total de viviendas,VIVTOT
+Vivienda,Total de viviendas habitadas,TVIVHAB
+Vivienda,Total de viviendas particulares,TVIVPAR
+Vivienda,Viviendas particulares habitadas,VIVPAR_HAB
+Vivienda,Total de viviendas particulares habitadas con características,VIVPARH_CV
+Vivienda,Total de viviendas particulares habitadas,TVIVPARHAB
+Vivienda,Viviendas particulares deshabitadas,VIVPAR_DES
+Vivienda,Viviendas particulares de uso temporal,VIVPAR_UT
+Vivienda,Ocupantes en viviendas particulares habitadas,OCUPVIVPAR
+Vivienda,Promedio de ocupantes en viviendas particulares habitadas,PROM_OCUP
+Vivienda,Promedio de ocupantes por cuarto en viviendas particulares habitadas,PRO_OCUP_C
+Vivienda,Viviendas particulares habitadas con piso de material diferente de tierra,VPH_PISODT
+Vivienda,Viviendas particulares habitadas con piso de tierra,VPH_PISOTI
+Vivienda,Viviendas particulares habitadas con un dormitorio,VPH_1DOR
+Vivienda,Viviendas particulares habitadas con dos dormitorios y más,VPH_2YMASD
+Vivienda,Viviendas particulares habitadas con sólo un cuarto,VPH_1CUART
+Vivienda,Viviendas particulares habitadas con dos cuartos,VPH_2CUART
+Vivienda,Viviendas particulares habitadas con 3 cuartos y más,VPH_3YMASC
+Vivienda,Viviendas particulares habitadas que disponen de energía eléctrica,VPH_C_ELEC
+Vivienda,Viviendas particulares habitadas que no disponen de energía eléctrica,VPH_S_ELEC
+Vivienda,Viviendas particulares habitadas que disponen de agua entubada en el ámbito de la vivienda,VPH_AGUADV
+Vivienda,Viviendas particulares habitadas que disponen de agua entubada y se abastecen del servicio público de agua,VPH_AEASP
+Vivienda,Viviendas particulares habitadas que no disponen de agua entubada en el ámbito de la vivienda,VPH_AGUAFV
+Vivienda,Viviendas particulares habitadas que disponen de tinaco,VPH_TINACO
+Vivienda,Viviendas particulares habitadas que disponen de cisterna o aljibe,VPH_CISTER
+Vivienda,Viviendas particulares habitadas que disponen de excusado o sanitario,VPH_EXCSA
+Vivienda,Viviendas particulares habitadas que disponen de letrina (pozo u hoyo),VPH_LETR
+Vivienda,Viviendas particulares habitadas que disponen de drenaje,VPH_DRENAJ
+Vivienda,Viviendas particulares habitadas que no disponen de drenaje,VPH_NODREN
+Vivienda,"Viviendas particulares habitadas que disponen de energía eléctrica, agua entubada de la red pública y drenaje",VPH_C_SERV
+Vivienda,"Viviendas particulares habitadas que no disponen de energía eléctrica, agua entubada, ni drenaje",VPH_NDEAED
+Vivienda,Viviendas particulares que disponen de drenaje y sanitario con admisión de agua,VPH_DSADMA
+Vivienda,"Viviendas particulares habitadas que no disponen de automóvil o camioneta, ni de motocicleta o motoneta",VPH_NDACMM
+Vivienda,Viviendas particulares habitadas sin ningún bien,VPH_SNBIEN
+Vivienda,Viviendas particulares habitadas que disponen de refrigerador,VPH_REFRI
+Vivienda,Viviendas particulares habitadas que disponen de lavadora,VPH_LAVAD
+Vivienda,Viviendas particulares habitadas que disponen de horno de microondas,VPH_HMICRO
+Vivienda,Viviendas particulares habitadas que disponen de automóvil o camioneta,VPH_AUTOM
+Vivienda,Viviendas particulares habitadas que disponen de motocicleta o motoneta,VPH_MOTO
+Vivienda,Viviendas particulares habitadas que disponen de bicicleta como medio de transporte,VPH_BICI
+Vivienda,Viviendas particulares habitadas que disponen de radio,VPH_RADIO
+Vivienda,Viviendas particulares habitadas que disponen de televisor,VPH_TV
+Vivienda,"Viviendas particulares habitadas que disponen de computadora, laptop o tablet",VPH_PC
+Vivienda,Viviendas particulares habitadas que disponen de línea telefónica fija,VPH_TELEF
+Vivienda,Viviendas particulares habitadas que disponen de teléfono celular,VPH_CEL
+Vivienda,Viviendas particulares habitadas que disponen de Internet,VPH_INTER
+Vivienda,Viviendas particulares habitadas que disponen de servicio de televisión de paga,VPH_STVP
+Vivienda,"Viviendas particulares habitadas que disponen de servicio de películas, música o videos de paga por Internet",VPH_SPMVPI
+Vivienda,Viviendas particulares habitadas que disponen de consola de videojuegos,VPH_CVJ
+Vivienda,Viviendas particulares habitadas sin radio ni televisor,VPH_SINRTV
+Vivienda,Viviendas particulares habitadas sin línea telefónica fija ni teléfono celular,VPH_SINLTC
+Vivienda,Viviendas particulares habitadas sin computadora ni Internet,VPH_SINCIN
+Vivienda,Viviendas particulares habitadas sin tecnologías de la información y de la comunicación (TIC),VPH_SINTIC
