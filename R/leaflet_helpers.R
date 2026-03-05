@@ -147,7 +147,14 @@ clip_mun_by_attribute <- function(mun_sf, universe_sf) {
         mun_sf[apply(hits, 1, any), ]
       }, error = function(e) mun_sf)
     } else {
-      mun_sf[mun_sf[[name_col]] %in% mun_names, , drop = FALSE]
+      by_name <- mun_sf[mun_sf[[name_col]] %in% mun_names, , drop = FALSE]
+      if (NROW(by_name) > 0) return(by_name)
+      # Fallback robusto: cuando los nombres no matchean (acentos/catálogos), recortar por geometría.
+      tryCatch({
+        union_geom <- st_union(st_geometry(universe_sf))
+        hits <- st_intersects(mun_sf, union_geom, sparse = FALSE)
+        mun_sf[apply(hits, 1, any), ]
+      }, error = function(e) mun_sf)
     }
   }
 }
@@ -188,4 +195,32 @@ create_base_leaflet <- function(init_bbox) {
   if (has_fullscreen)
     m <- leaflet.extras::addFullscreenControl(m, position = "topleft", pseudoFullscreen = FALSE)
   m
+}
+
+
+add_html_legend <- function(proxy, title, rows, position = "bottomright") {
+  title <- as.character(title %||% "Leyenda")
+  rows <- rows[!is.na(rows) & nzchar(rows)]
+  if (!length(rows)) return(proxy)
+  box <- tags$div(
+    style = paste0(
+      "background: rgba(255,255,255,.94); backdrop-filter: blur(6px);",
+      "padding:8px 10px; border-radius:10px; border:1px solid #DADCE0;",
+      "box-shadow:0 1px 6px rgba(0,0,0,.18); min-width:150px;"
+    ),
+    tags$div(style = "font-weight:800; color:#202124; font-size:12px; margin-bottom:6px;", title),
+    HTML(paste(rows, collapse = ""))
+  )
+  tryCatch(addControl(proxy, box, position = position), error = function(e) proxy)
+}
+
+legend_row_chip <- function(label, color = "#9AA0A6", logo = "") {
+  paste0(
+    "<div style='display:flex;align-items:center;gap:6px;margin:2px 0;'>",
+    "<span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:", color,
+    ";border:1px solid rgba(0,0,0,.15)'></span>",
+    ifelse(nzchar(logo %||% ""), paste0("<span>", logo, "</span>"), ""),
+    "<span style='font-size:11px;color:#202124;font-weight:600'>", label, "</span>",
+    "</div>"
+  )
 }

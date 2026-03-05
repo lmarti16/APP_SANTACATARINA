@@ -104,6 +104,36 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
     elex_local <- elex %||% data.table(office = character(0), key = character(0))
     default_election_local <- default_election %||% (if (NROW(elex_local) > 0) elex_local$key[1] else NULL)
 
+
+    resolve_comp_key <- reactive({
+      ref_key <- election_input() %||% default_election_local
+      if (!nzchar(ref_key %||% "") || NROW(elex_local) == 0) {
+        return(input$ts_map_election %||% default_election_local)
+      }
+      ref_office <- parse_key(ref_key)$office
+      office_keys <- elex_local$key[elex_local$office == ref_office]
+      office_keys <- unique(office_keys)
+      if (!length(office_keys)) office_keys <- unique(elex_local$key)
+
+      selected <- input$ts_map_election %||% ""
+      if (nzchar(selected) && selected %in% office_keys && selected != ref_key) return(selected)
+
+      fallback <- office_keys[office_keys != ref_key]
+      if (length(fallback)) return(fallback[1])
+      ref_key
+    })
+
+    observeEvent(list(has_applied(), election_input()), {
+      req(has_applied())
+      ref_key <- election_input() %||% default_election_local
+      ref_office <- parse_key(ref_key)$office
+      office_rows <- elex_local[elex_local$office == ref_office]
+      if (NROW(office_rows) == 0) office_rows <- elex_local
+      choices <- setNames(office_rows$key, office_rows$label)
+      selected <- resolve_comp_key()
+      updateSelectInput(session, "ts_map_election", choices = choices, selected = selected)
+    }, ignoreInit = FALSE)
+
     ts_keys <- reactive({
       req(has_applied())
       sel  <- input$ts_offices %||% sort(unique(elex_local$office))
@@ -138,7 +168,7 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
     output$ui_ts_choro_party <- renderUI({
       req(has_applied()); df <- df_applied()
       ref_key  <- election_input()        %||% default_election_local
-      comp_key <- input$ts_map_election %||% default_election_local
+      comp_key <- resolve_comp_key()
       out <- get_valid_distribuido_parties(df, c(ref_key, comp_key))
       validate(need(length(out) > 0L, "Sin partidos"))
       def <- if ("PRI" %in% out) "PRI" else out[1]
@@ -148,7 +178,7 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
     output$ts_map_subtitle <- renderUI({
       if (!has_applied()) return(span("Presiona GENERAR", style = "color:var(--muted);"))
       ref_key  <- election_input()        %||% default_election_local
-      comp_key <- input$ts_map_election %||% default_election_local
+      comp_key <- resolve_comp_key()
       n_secc   <- NROW(df_applied())
       span(HTML(paste0(
         "\u0394 = <b>", key_label(ref_key), "</b> \u2212 <b>", key_label(comp_key), "</b>",
@@ -319,7 +349,7 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
 
         tryCatch({
           ref_key  <- election_input()        %||% default_election_local
-          comp_key <- input$ts_map_election  %||% default_election_local
+          comp_key <- resolve_comp_key()
           view     <- input$ts_map_view     %||% "choro_party"
           scale    <- input$ts_delta_scale  %||% "linear"
           opac     <- input$ts_map_opacity  %||% 0.70
@@ -347,6 +377,8 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
 
           add_delta <- function(proxy, df, delta, ref_val, comp_val, ttl, fmt_fn, scale, opac) {
             pal <- make_pal_delta(delta, scale = scale)
+            legend_vals <- pal$values
+            if (!any(is.finite(legend_vals))) legend_vals <- c(-1, 0, 1)
             lab <- paste0(
               hdr, "<br><br><b>", ttl, "</b>",
               "<br>Ref: ",  fmt_fn(ref_val),
@@ -358,7 +390,7 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
                           fillColor = pal$pal(pal$values), fillOpacity = opac,
                           label = lapply(lab, HTML),
                           highlightOptions = highlightOptions(color = ACCENT, weight = 2, bringToFront = TRUE)) |>
-              suppressWarnings(addLegend(position = "bottomright", pal = pal$pal, values = pal$values,
+              suppressWarnings(addLegend(position = "bottomright", pal = pal$pal, values = legend_vals,
                                          title = paste0("\u0394 ", ttl), opacity = 0.9))
           }
 
@@ -381,7 +413,12 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
 
             gv_r <- group_votes_matrix(df, ref_key,  vt); G_r <- gv_r$G
             gv_c <- group_votes_matrix(df, comp_key, vt); G_c <- gv_c$G
-            if (is.null(G_r) || ncol(G_r) == 0L) return()
+            if (is.null(G_r) || ncol(G_r) == 0L) {
+              proxy <- proxy |>
+                suppressWarnings(addLegend(position = "bottomright", colors = "#DADCE0",
+                                           labels = "Sin datos", title = "Δ Partido", opacity = 0.9))
+              return()
+            }
 
             if (is.null(pick) || !nzchar(pick)) pick <- if ("PRI" %in% colnames(G_r)) "PRI" else colnames(G_r)[1]
             if (!(pick %in% colnames(G_r))) pick <- colnames(G_r)[1]
@@ -403,6 +440,8 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
               delta_pp <- 100 * (pct_r - pct_c)
 
               pal <- make_pal_delta(delta_pp, scale = scale)
+              legend_vals <- pal$values
+              if (!any(is.finite(legend_vals))) legend_vals <- c(-1, 0, 1)
               lab <- paste0(hdr, "<br><br><b>", pick, "</b>",
                             "<br>Ref %: ",  fmt_pct(pct_r),
                             "<br>Comp %: ", fmt_pct(pct_c),
@@ -412,11 +451,13 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
                             fillColor = pal$pal(pal$values), fillOpacity = opac,
                             label = lapply(lab, HTML),
                             highlightOptions = highlightOptions(color = ACCENT, weight = 2, bringToFront = TRUE)) |>
-                suppressWarnings(addLegend(position = "bottomright", pal = pal$pal, values = pal$values,
+                suppressWarnings(addLegend(position = "bottomright", pal = pal$pal, values = legend_vals,
                                            title = paste0("\u0394 ", pick, " (pp)"), opacity = 0.9))
             } else {
               delta <- votes_r - votes_c
               pal   <- make_pal_delta(delta, scale = scale)
+              legend_vals <- pal$values
+              if (!any(is.finite(legend_vals))) legend_vals <- c(-1, 0, 1)
               lab   <- paste0(hdr, "<br><br><b>", pick, "</b>",
                               "<br>Ref: ",  fmt_int(votes_r),
                               "<br>Comp: ", fmt_int(votes_c),
@@ -426,7 +467,7 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
                             fillColor = pal$pal(pal$values), fillOpacity = opac,
                             label = lapply(lab, HTML),
                             highlightOptions = highlightOptions(color = ACCENT, weight = 2, bringToFront = TRUE)) |>
-                suppressWarnings(addLegend(position = "bottomright", pal = pal$pal, values = pal$values,
+                suppressWarnings(addLegend(position = "bottomright", pal = pal$pal, values = legend_vals,
                                            title = paste0("\u0394 ", pick, " (votos)"), opacity = 0.9))
             }
           }
@@ -434,6 +475,10 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
           proxy <- add_all_overlays_clipped(proxy, co$dl, co$mun, co$df)
           proxy <- add_layers_control(proxy, og)
           proxy <- hide_all_overlays(proxy)
+          # En mapa de Tiempo mantener visible el contorno municipal cuando exista.
+          if (!is.null(co$mun) && NROW(co$mun) > 0) {
+            proxy <- tryCatch(showGroup(proxy, MUN_GROUP), error = function(e) proxy)
+          }
           fit_bounds_padded(proxy, df)
 
         }, error = function(e) {
