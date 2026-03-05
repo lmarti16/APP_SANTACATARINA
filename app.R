@@ -81,6 +81,13 @@ SECC_MUN_COL     <- pick_col(names(sf_all), c("NOMBRE_MUNICIPIO", "NOM_MUN", "MU
 SECC_DF_COL      <- pick_col(names(sf_all), c("DISTRITO_FEDERAL", "DISTRITO_F", "DIST_F", "DF_NUM"))
 SECC_DF_NAME_COL <- pick_col(names(sf_all), c("NOMBRE_DISTRITO_FEDERAL", "NOM_DF"))
 
+# Exponer columnas de filtro geográfico para helpers/modulos evaluados en .GlobalEnv.
+assign("SECC_DL_COL", SECC_DL_COL, envir = .GlobalEnv)
+assign("SECC_DL_NAME_COL", SECC_DL_NAME_COL, envir = .GlobalEnv)
+assign("SECC_MUN_COL", SECC_MUN_COL, envir = .GlobalEnv)
+assign("SECC_DF_COL", SECC_DF_COL, envir = .GlobalEnv)
+assign("SECC_DF_NAME_COL", SECC_DF_NAME_COL, envir = .GlobalEnv)
+
 mun_sf <- load_aux_layer(PATH_MUN, "municipios")
 dfe_sf <- load_aux_layer(PATH_DF, "distritos federales")
 

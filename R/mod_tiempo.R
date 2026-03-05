@@ -434,6 +434,10 @@ mod_tiempo_server <- function(id, has_applied, applied, df_applied,
           proxy <- add_all_overlays_clipped(proxy, co$dl, co$mun, co$df)
           proxy <- add_layers_control(proxy, og)
           proxy <- hide_all_overlays(proxy)
+          # En mapa de Tiempo mantener visible el contorno municipal cuando exista.
+          if (!is.null(co$mun) && NROW(co$mun) > 0) {
+            proxy <- tryCatch(showGroup(proxy, MUN_GROUP), error = function(e) proxy)
+          }
           fit_bounds_padded(proxy, df)
 
         }, error = function(e) {
