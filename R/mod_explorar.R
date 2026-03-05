@@ -213,12 +213,14 @@ mod_explorar_server <- function(id, has_applied, applied, df_applied,
             lab <- paste0(lab_base, "<br><b>", pick, " (votos):</b> ", fmt_int(v))
             ttl <- HTML(paste0("<span style='color:", party_accent, ";font-weight:900'>\u25cf</span> ", pick, " (votos)"))
           }
+          legend_vals <- res$values
+          if (!any(is.finite(legend_vals))) legend_vals <- c(0, 1)
           proxy <- proxy |>
             addPolygons(data = df, color = "#BDC1C6", weight = 0.8,
                         fillColor = res$pal(res$values), fillOpacity = ap$choro_opacity %||% 0.65,
                         label = lapply(lab, HTML),
                         highlightOptions = highlightOptions(color = ACCENT, weight = 2, bringToFront = TRUE)) |>
-            suppressWarnings(addLegend(position = "bottomright", pal = res$pal, values = res$values, title = ttl, opacity = 0.9))
+            suppressWarnings(addLegend(position = "bottomright", pal = res$pal, values = legend_vals, title = ttl, opacity = 0.9))
         } else {
           mv <- ap$map_view %||% "winner"
           if (mv == "winner") {
@@ -237,6 +239,11 @@ mod_explorar_server <- function(id, has_applied, applied, df_applied,
                 suppressWarnings(addLegend(position = "bottomright", colors = as.vector(leg_cols),
                                            labels = as.vector(leg_vals),
                                            title = paste0("Ganador (", ap$winner_vote_type, ")"), opacity = 0.9))
+            } else {
+              proxy <- proxy |>
+                suppressWarnings(addLegend(position = "bottomright", colors = "#DADCE0",
+                                           labels = "Sin datos", title = paste0("Ganador (", ap$winner_vote_type, ")"),
+                                           opacity = 0.9))
             }
           } else {
             v <- switch(mv, part = x$part, tot = x$tot, ln = x$ln, x$tot)
@@ -244,18 +251,23 @@ mod_explorar_server <- function(id, has_applied, applied, df_applied,
             ttl <- switch(mv, part = "Participaci\u00f3n (%)", tot = "Total votos", ln = "Lista nominal", "M\u00e9trica")
             lab <- if (mv == "part") paste0(lab_base, "<br><b>", ttl, ":</b> ", fmt_pct(v))
             else paste0(lab_base, "<br><b>", ttl, ":</b> ", fmt_int(v))
+            legend_vals <- v
+            if (!any(is.finite(legend_vals))) legend_vals <- c(0, 1)
             proxy <- proxy |>
               addPolygons(data = df, color = "#BDC1C6", weight = 0.8,
                           fillColor = pal(v), fillOpacity = 0.62,
                           label = lapply(lab, HTML),
                           highlightOptions = highlightOptions(color = ACCENT, weight = 2, bringToFront = TRUE)) |>
-              suppressWarnings(addLegend(position = "bottomright", pal = pal, values = v, title = ttl, opacity = 0.9))
+              suppressWarnings(addLegend(position = "bottomright", pal = pal, values = legend_vals, title = ttl, opacity = 0.9))
           }
         }
 
         proxy <- add_all_overlays_clipped(proxy, co$dl, co$mun, co$df)
         proxy <- add_layers_control(proxy, og)
         proxy <- hide_all_overlays(proxy)
+        if (!is.null(co$mun) && NROW(co$mun) > 0) {
+          proxy <- tryCatch(showGroup(proxy, MUN_GROUP), error = function(e) proxy)
+        }
         fit_bounds_padded(proxy, df)
 
       }, error = function(e) {

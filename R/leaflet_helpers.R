@@ -147,7 +147,14 @@ clip_mun_by_attribute <- function(mun_sf, universe_sf) {
         mun_sf[apply(hits, 1, any), ]
       }, error = function(e) mun_sf)
     } else {
-      mun_sf[mun_sf[[name_col]] %in% mun_names, , drop = FALSE]
+      by_name <- mun_sf[mun_sf[[name_col]] %in% mun_names, , drop = FALSE]
+      if (NROW(by_name) > 0) return(by_name)
+      # Fallback robusto: cuando los nombres no matchean (acentos/catálogos), recortar por geometría.
+      tryCatch({
+        union_geom <- st_union(st_geometry(universe_sf))
+        hits <- st_intersects(mun_sf, union_geom, sparse = FALSE)
+        mun_sf[apply(hits, 1, any), ]
+      }, error = function(e) mun_sf)
     }
   }
 }
