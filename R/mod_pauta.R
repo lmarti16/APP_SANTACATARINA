@@ -2,7 +2,7 @@
 # Módulo Shiny: pestaña "PAUTA" (optimización de buffers)
 # ─────────────────────────────────────────────────────────────
 
-mod_pauta_ui <- function(id) {
+mod_pauta_ui <- function(id, ejes_disponibles = character(0)) {
   ns <- NS(id)
   div(
     style = "padding:12px;",
@@ -24,9 +24,9 @@ mod_pauta_ui <- function(id) {
           ),
           conditionalPanel(
             condition = paste0("input['", ns("buf_mode"), "'] == 'inegi'"),
-            if (length(EJES_DISPONIBLES) > 0) tagList(
+            if (length(ejes_disponibles) > 0) tagList(
               selectInput(ns("buf_ejes"), "Eje",
-                          choices  = c("Selecciona..." = "", setNames(EJES_DISPONIBLES, EJES_DISPONIBLES)),
+                          choices  = c("Selecciona..." = "", setNames(ejes_disponibles, ejes_disponibles)),
                           selected = ""),
               uiOutput(ns("ui_buf_optim_var"))
             ) else div(class = "smallHelp", "No hay variables INEGI disponibles")
@@ -88,9 +88,12 @@ mod_pauta_ui <- function(id) {
 
 mod_pauta_server <- function(id, has_applied, applied, df_applied,
                               sf_all, dl_sf, mun_sf, dfe_sf,
-                              main_tabs) {
+                              main_tabs, traductor = NULL, inegi_col_map = NULL) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+
+    traductor_local <- traductor %||% data.frame(Eje = character(0), Indicador = character(0), VARIABLE = character(0), stringsAsFactors = FALSE)
+    inegi_col_map_local <- inegi_col_map %||% setNames(character(0), character(0))
 
     buf_applied <- reactiveVal(NULL)
 
@@ -109,8 +112,8 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
     output$ui_buf_optim_var <- renderUI({
       eje <- input$buf_ejes %||% ""
-      if (!nzchar(eje) || NROW(TRADUCTOR) == 0) return(NULL)
-      sub <- TRADUCTOR[TRADUCTOR$Eje == eje, ]
+      if (!nzchar(eje) || NROW(traductor_local) == 0) return(NULL)
+      sub <- traductor_local[traductor_local$Eje == eje, ]
       if (NROW(sub) == 0) return(NULL)
       ch <- setNames(sub$VARIABLE, sub$Indicador)
       sel <- sub$VARIABLE[1]
@@ -120,7 +123,7 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
     buf_inegi_vars <- reactive({
       v <- input$buf_optim_var %||% ""
-      if (nzchar(v) && v %in% names(INEGI_COL_MAP)) v else character(0)
+      if (nzchar(v) && v %in% names(inegi_col_map_local)) v else character(0)
     })
 
     df_pauta_universe <- reactive({
@@ -158,7 +161,7 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
         if (mode == "inegi") {
           optim_var <- input$buf_optim_var %||% ""
-          col_nm    <- INEGI_COL_MAP[[optim_var]]
+          col_nm    <- inegi_col_map_local[[optim_var]]
           if (is.null(col_nm) || !(col_nm %in% names(univ))) {
             showNotification("Selecciona variable INEGI para maximizar.", type = "warning"); return()
           }
@@ -259,8 +262,8 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
 
         removeNotification("buf_calc")
         lbl_mode <- if (mode == "inegi") {
-          idx <- match(pick, TRADUCTOR$VARIABLE)
-          if (!is.na(idx)) TRADUCTOR$Indicador[idx] else pick
+          idx <- match(pick, traductor_local$VARIABLE)
+          if (!is.na(idx)) traductor_local$Indicador[idx] else pick
         } else paste0("votos ", pick)
         showNotification(
           paste0("\u2713 ", length(selected_idx), " pt(s) \u00b7 ",
@@ -281,8 +284,8 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
       ba <- buf_applied()
       is_inegi <- identical(ba$mode, "inegi")
       lbl <- if (is_inegi) {
-        idx <- match(ba$party, TRADUCTOR$VARIABLE)
-        if (!is.na(idx)) TRADUCTOR$Indicador[idx] else ba$party
+        idx <- match(ba$party, traductor_local$VARIABLE)
+        if (!is.na(idx)) traductor_local$Indicador[idx] else ba$party
       } else paste0("votos ", ba$party %||% "")
       div(class = "smallHelp", style = "color:#1E8E3E;",
           HTML(paste0(
@@ -613,7 +616,7 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
         inegi_sel <- buf_inegi_vars()
         if (length(inegi_sel) > 0) {
           for (v in inegi_sel) {
-            col_nm <- INEGI_COL_MAP[[v]]
+            col_nm <- inegi_col_map_local[[v]]
             if (!is.null(col_nm) && col_nm %in% names(univ)) {
               row[[v]] <- sum(as_num(univ[[col_nm]][inside]), na.rm = TRUE)
             }
@@ -652,7 +655,7 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
       inegi_sel <- buf_inegi_vars()
       if (length(inegi_sel) > 0) {
         for (v in inegi_sel) {
-          col_nm <- INEGI_COL_MAP[[v]]
+          col_nm <- inegi_col_map_local[[v]]
           if (!is.null(col_nm) && col_nm %in% names(univ)) {
             total_row[[v]] <- sum(as_num(univ[[col_nm]][all_inside]), na.rm = TRUE)
           }
@@ -678,13 +681,13 @@ mod_pauta_server <- function(id, has_applied, applied, df_applied,
         if (cn %in% party_num_cols) {
           logo_html <- party_logo_inline(cn, "16px")
           if (nzchar(logo_html)) col_headers[i] <- paste0(logo_html, cn)
-        } else if (cn %in% inegi_sel && NROW(TRADUCTOR) > 0) {
-          idx <- match(cn, TRADUCTOR$VARIABLE)
+        } else if (cn %in% inegi_sel && NROW(traductor_local) > 0) {
+          idx <- match(cn, traductor_local$VARIABLE)
           if (!is.na(idx)) {
             col_headers[i] <- paste0(
               "<span style='font-size:9px;color:#1A73E8;font-weight:700;'>",
-              TRADUCTOR$Eje[idx], "</span><br>",
-              "<span style='font-size:10px;'>", TRADUCTOR$Indicador[idx], "</span>")
+              traductor_local$Eje[idx], "</span><br>",
+              "<span style='font-size:10px;'>", traductor_local$Indicador[idx], "</span>")
           }
         }
       }
